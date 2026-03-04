@@ -1,0 +1,37 @@
+# Active Service - receives production traffic
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.active.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sample-python-app.labels" . | nindent 4 }}
+    service-type: active
+spec:
+  type: {{ .Values.service.active.type }}
+  ports:
+    - port: {{ .Values.service.active.port }}
+      targetPort: {{ .Values.service.active.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "sample-python-app.selectorLabels" . | nindent 4 }}
+---
+# Preview Service - receives traffic for the new (canary/preview) version
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.service.preview.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sample-python-app.labels" . | nindent 4 }}
+    service-type: preview
+spec:
+  type: {{ .Values.service.preview.type }}
+  ports:
+    - port: {{ .Values.service.preview.port }}
+      targetPort: {{ .Values.service.preview.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "sample-python-app.selectorLabels" . | nindent 4 }}
